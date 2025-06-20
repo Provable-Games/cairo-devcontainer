@@ -65,6 +65,7 @@ for domain in \
     "update.code.visualstudio.com" \
     "code.visualstudio.com" \
     "vscode.download.prss.microsoft.com" \
+    "marketplace.cursorapi.com" \
     "statsig.com"; do
     echo "Resolving $domain..."
     ips=$(dig +short A "$domain")

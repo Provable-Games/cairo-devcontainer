@@ -94,11 +94,11 @@ RUN export PATH="$HOME/.local/bin:$PATH" && \
     asdf plugin add starknet-foundry && \
     asdf install starknet-foundry 0.45.0 && \
     asdf plugin add cairo-coverage && \
-    asdf install cairo-coverage 0.1.0 && \
+    asdf install cairo-coverage 0.1.0
 
 RUN curl -L https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh | sh
 
-# Install Claude
+# Install Claude (MCP servers configured in postCreateCommand)
 RUN npm install -g @anthropic-ai/claude-code
 
 # Switch to root for final setup
