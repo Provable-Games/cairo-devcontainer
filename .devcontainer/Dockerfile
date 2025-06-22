@@ -101,6 +101,9 @@ RUN curl -L https://raw.githubusercontent.com/software-mansion/universal-sierra-
 # Install Claude (MCP servers configured in postCreateCommand)
 RUN npm install -g @anthropic-ai/claude-code
 
+# Install Starkli for Starknet CLI
+RUN curl https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
+
 # Switch to root for final setup
 USER root
 
