@@ -46,5 +46,5 @@
 	},
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
 	"workspaceFolder": "/workspace",
-	"postCreateCommand": "sudo /usr/local/bin/init-firewall.sh && claude mcp add sequential-thinking -- npx @modelcontextprotocol/server-sequential-thinking && claude mcp add context7 -- npx -y @upstash/context7-mcp"
+	"postCreateCommand": "/workspace/.devcontainer/post-create.sh"
   }
