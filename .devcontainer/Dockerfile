@@ -89,12 +89,13 @@ RUN export PATH="$HOME/.local/bin:$PATH" && \
     mkdir -p ~/.config/asdf && \
     asdf plugin add dojo && \
     asdf install dojo 1.5.0 && \
+    asdf install dojo 1.5.1 && \
     asdf plugin add scarb && \
     asdf install scarb 2.10.1 && \
     asdf plugin add starknet-foundry && \
     asdf install starknet-foundry 0.45.0 && \
     asdf plugin add cairo-coverage && \
-    asdf install cairo-coverage 0.1.0
+    asdf install cairo-coverage 0.5.0
 
 RUN curl -L https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh | sh
 
