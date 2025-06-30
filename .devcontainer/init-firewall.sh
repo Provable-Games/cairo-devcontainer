@@ -67,6 +67,8 @@ for domain in \
     "vscode.download.prss.microsoft.com" \
     "marketplace.cursorapi.com" \
     "cairo-lang.org" \
+    "api.cartridge.gg" \
+    "book.starkli.rs" \
     "statsig.com"; do
     echo "Resolving $domain..."
     ips=$(dig +short A "$domain")
