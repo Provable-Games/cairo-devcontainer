@@ -15,6 +15,10 @@ cat > ~/.claude/settings.json << 'EOF'
     "defaultMode": "bypassPermissions",
     "allow": [],
     "deny": []
+  },
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": 3600000,
+    "BASH_MAX_TIMEOUT_MS": 3600000
   }
 }
 EOF
