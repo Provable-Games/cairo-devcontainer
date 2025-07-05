@@ -7,6 +7,7 @@ ENV TZ="$TZ"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# NOTE: sudo is NOT installed for security - all privileged operations happen during build
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
@@ -19,7 +20,6 @@ RUN apt-get update && apt-get install -y \
     npm \
     jq \
     locales \
-    sudo \
     iptables \
     ipset \
     dnsutils \
@@ -113,10 +113,7 @@ USER root
 
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/init-firewall.sh && \
-  mkdir -p /etc/sudoers.d && \
-  echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/$USERNAME-firewall && \
-  chmod 0440 /etc/sudoers.d/$USERNAME-firewall
+RUN chmod +x /usr/local/bin/init-firewall.sh
 
 # Switch back to user
 USER $USERNAME

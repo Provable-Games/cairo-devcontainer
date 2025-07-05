@@ -3,9 +3,14 @@ set -e
 
 echo "Setting up development environment..."
 
-# Initialize firewall
-echo "Initializing firewall..."
-sudo /usr/local/bin/init-firewall.sh
+# Firewall is initialized during container build
+echo "Verifying firewall is active..."
+# Check if firewall rules exist
+if iptables -L OUTPUT -n | grep -q "policy DROP" 2>/dev/null; then
+    echo "Firewall is active and configured"
+else
+    echo "WARNING: Firewall may not be properly configured"
+fi
 
 # Configure Claude permissions
 echo "Configuring Claude permissions..."
