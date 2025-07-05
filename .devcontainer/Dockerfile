@@ -108,15 +108,13 @@ RUN curl https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 # pre-approve all commands for claude (full yolo)
 RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "deny": []}}' > ~/.claude/settings.json
 
-# Switch to root for final setup
+# Switch to root for firewall setup
 USER root
 
-# Copy and set up firewall script
+# Copy and initialize firewall during build
 COPY init-firewall.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
-  mkdir -p /etc/sudoers.d && \
-  echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/$USERNAME-firewall && \
-  chmod 0440 /etc/sudoers.d/$USERNAME-firewall
+    /usr/local/bin/init-firewall.sh
 
 # Switch back to user
 USER $USERNAME
