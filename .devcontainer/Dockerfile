@@ -118,6 +118,9 @@ RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/$USERNAME-firewall && \
   chmod 0440 /etc/sudoers.d/$USERNAME-firewall
 
+# Lock down iptables binaries to prevent tampering
+RUN chmod 700 /sbin/iptables /sbin/ip6tables
+
 # Switch back to user
 USER $USERNAME
 
