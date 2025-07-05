@@ -4,7 +4,8 @@
 	  "dockerfile": "Dockerfile",
 	  "args": {
 		"TZ": "${localEnv:TZ:America/Los_Angeles}"
-	  }
+	  },
+	  "options": ["--cap-add=NET_ADMIN", "--cap-add=SYS_MODULE"]
 	},
 	"runArgs": [
 	  "--cap-add=NET_ADMIN",

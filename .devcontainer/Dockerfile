@@ -111,9 +111,11 @@ RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "den
 # Switch to root for final setup
 USER root
 
-# Copy and set up firewall script
+# Copy firewall configuration files
 COPY init-firewall.sh /usr/local/bin/
+COPY allowed-domains.conf /etc/
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
+  chmod 644 /etc/allowed-domains.conf && \
   mkdir -p /etc/sudoers.d && \
   echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/$USERNAME-firewall && \
   chmod 0440 /etc/sudoers.d/$USERNAME-firewall

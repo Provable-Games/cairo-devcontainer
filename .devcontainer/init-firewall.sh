@@ -2,6 +2,9 @@
 set -euo pipefail  # Exit on error, undefined vars, and pipeline failures
 IFS=$'\n\t'       # Stricter word splitting
 
+# Configuration file path
+readonly ALLOWED_DOMAINS_FILE="/etc/allowed-domains.conf"
+
 # Flush existing rules and delete existing ipsets
 iptables -F
 iptables -X
@@ -50,29 +53,18 @@ while read -r cidr; do
     ipset add allowed-domains "$cidr"
 done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | aggregate -q)
 
-# Resolve and add other allowed domains
-for domain in \
-    "registry.npmjs.org" \
-    "api.anthropic.com" \
-    "sentry.io" \
-    "statsig.anthropic.com" \
-    "scarbs.xyz" \
-    "archive.ubuntu.com" \
-    "security.ubuntu.com" \
-    "static.rust-lang.org" \
-    "index.crates.io" \
-    "marketplace.visualstudio.com" \
-    "update.code.visualstudio.com" \
-    "code.visualstudio.com" \
-    "vscode.download.prss.microsoft.com" \
-    "marketplace.cursorapi.com" \
-    "cairo-lang.org" \
-    "api.cartridge.gg" \
-    "book.starkli.rs" \
-    "docs.starknet.io" \
-    "github.com" \
-    "foundry-rs.github.io" \
-    "statsig.com"; do
+# Verify allowed domains file exists
+if [ ! -f "$ALLOWED_DOMAINS_FILE" ]; then
+    echo "ERROR: Allowed domains file not found at $ALLOWED_DOMAINS_FILE"
+    exit 1
+fi
+
+# Resolve and add allowed domains from configuration file
+echo "Reading allowed domains from $ALLOWED_DOMAINS_FILE..."
+while IFS= read -r domain; do
+    # Skip empty lines and comments
+    [[ -z "$domain" || "$domain" =~ ^# ]] && continue
+    
     echo "Resolving $domain..."
     ips=$(dig +short A "$domain")
     if [ -z "$ips" ]; then
@@ -88,7 +80,7 @@ for domain in \
         echo "Adding $ip for $domain"
         ipset add allowed-domains "$ip" -exist
     done < <(echo "$ips")
-done
+done < "$ALLOWED_DOMAINS_FILE"
 
 # Add google domains commonly used for downloading packages
 ipset add allowed-domains "142.250.0.0/15"
