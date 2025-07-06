@@ -1,15 +1,26 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
-echo "Setting up development environment..."
+# Simple logging
+log() {
+    echo "[POST-CREATE] $*"
+}
+
+error() {
+    echo "[POST-CREATE] ERROR: $*" >&2
+    exit 1
+}
+
+log "Setting up development environment..."
 
 # Initialize firewall
-echo "Initializing firewall..."
-sudo /usr/local/bin/init-firewall.sh
+log "Initializing firewall..."
+sudo /usr/local/bin/init-firewall.sh || error "Failed to initialize firewall"
 
 # Configure Claude permissions
-echo "Configuring Claude permissions..."
-cat > ~/.claude/settings.json << 'EOF'
+log "Configuring Claude permissions..."
+cat > ~/.claude/settings.json << 'EOF' || error "Failed to configure Claude settings"
 {
   "permissions": {
     "defaultMode": "bypassPermissions",
@@ -24,9 +35,9 @@ cat > ~/.claude/settings.json << 'EOF'
 EOF
 
 # Install MCP servers
-echo "Installing MCP servers..."
-claude mcp add sequential-thinking -- npx @modelcontextprotocol/server-sequential-thinking
-claude mcp add context7 -- npx -y @upstash/context7-mcp
-claude mcp add memory -- npx -y @modelcontextprotocol/server-memory
+log "Installing MCP servers..."
+claude mcp add sequential-thinking -- npx @modelcontextprotocol/server-sequential-thinking || log "WARNING: Failed to install sequential-thinking MCP server"
+claude mcp add context7 -- npx -y @upstash/context7-mcp || log "WARNING: Failed to install context7 MCP server"
+claude mcp add memory -- npx -y @modelcontextprotocol/server-memory || log "WARNING: Failed to install memory MCP server"
 
-echo "Post-create setup complete!"
+log "Post-create setup complete!"
