@@ -23,6 +23,15 @@ error() {
 # Verify allowed domains file exists
 [[ -f "$ALLOWED_DOMAINS_FILE" ]] || error "Allowed domains file not found at $ALLOWED_DOMAINS_FILE"
 
+# Verify required dependencies
+command -v iptables >/dev/null 2>&1 || error "iptables is required but not installed"
+command -v ipset >/dev/null 2>&1 || error "ipset is required but not installed"
+command -v curl >/dev/null 2>&1 || error "curl is required but not installed"
+command -v jq >/dev/null 2>&1 || error "jq is required but not installed"
+command -v dig >/dev/null 2>&1 || error "dig is required but not installed"
+command -v grep >/dev/null 2>&1 || error "grep is required but not installed"
+command -v awk >/dev/null 2>&1 || error "awk is required but not installed"
+
 log "Initializing firewall rules..."
 
 # Flush existing rules
@@ -50,8 +59,28 @@ log "Fetching GitHub IP ranges..."
 gh_ranges=$(curl -s --connect-timeout 5 https://api.github.com/meta) || error "Failed to fetch GitHub IPs"
 
 echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | while read -r cidr; do
-    if [[ "$cidr" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}$ ]]; then
-        ipset add allowed-domains "$cidr" -exist
+    # Validate CIDR format and range
+    if [[ "$cidr" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$ ]]; then
+        # Extract IP and prefix
+        ip="${cidr%/*}"
+        prefix="${cidr#*/}"
+        
+        # Validate IP octets
+        valid_ip=true
+        IFS='.' read -ra octets <<< "$ip"
+        for octet in "${octets[@]}"; do
+            if (( octet > 255 )); then
+                valid_ip=false
+                break
+            fi
+        done
+        
+        # Validate prefix
+        if [[ "$valid_ip" == true ]] && (( prefix >= 0 && prefix <= 32 )); then
+            ipset add allowed-domains "$cidr" -exist
+        else
+            log "WARNING: Invalid CIDR range from GitHub: $cidr"
+        fi
     fi
 done
 
@@ -99,9 +128,17 @@ iptables -P OUTPUT DROP
 
 log "Firewall initialization complete"
 
-# Simple verification
+# Verification tests
+log "Running firewall verification tests..."
+
+# Negative test - should be blocked
 if timeout 2 curl -s https://example.com >/dev/null 2>&1; then
-    error "Firewall test failed - example.com is accessible"
+    error "Firewall test failed - example.com is accessible (should be blocked)"
 fi
 
-log "Firewall verified - blocking working correctly"
+# Positive test - should be allowed
+if ! timeout 5 curl -s https://api.github.com/zen >/dev/null 2>&1; then
+    error "Firewall test failed - api.github.com is not accessible (should be allowed)"
+fi
+
+log "Firewall verified - all tests passed"
