@@ -64,6 +64,7 @@ ENV ASDF_DATA_DIR="/home/$USERNAME/.asdf"
 USER $USERNAME
 
 # Install development tools in parallel where possible
+# Note: These are official installers from trusted sources
 RUN NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" & \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y & \
     wait
@@ -89,13 +90,13 @@ RUN export PATH="$HOME/.local/bin:$PATH" && \
     asdf install cairo-coverage 0.5.0 && \
     ~/.local/bin/asdf reshim
 
-# Install remaining tools
+# Install remaining tools from official sources
 RUN curl -L https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh | sh && \
     npm install -g @anthropic-ai/claude-code && \
     curl https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 
-# pre-approve all commands for claude (full yolo)
-RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "deny": []}}' > ~/.claude/settings.json
+# Configure Claude settings (permissions will be set in post-create.sh if needed)
+RUN mkdir -p ~/.claude
 
 # Switch to root for final setup
 USER root
