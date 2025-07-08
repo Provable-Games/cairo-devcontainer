@@ -103,7 +103,7 @@ RUN curl -sL https://raw.githubusercontent.com/software-mansion/universal-sierra
 RUN npm install -g @anthropic-ai/claude-code
 
 # Install Starkli for Starknet CLI
-RUN curl -s https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
+RUN curl -sL https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 
 # pre-approve all commands for claude (full yolo)
 RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "deny": []}}' > ~/.claude/settings.json
