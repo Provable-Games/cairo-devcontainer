@@ -79,7 +79,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 
 # Install asdf binary (Go version) and configure
 RUN mkdir -p ~/.local/bin && \
-    wget https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-amd64.tar.gz && \
+    wget -q https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-amd64.tar.gz && \
     tar -xzf asdf-v0.18.0-linux-amd64.tar.gz -C ~/.local/bin/ && \
     chmod +x ~/.local/bin/asdf && \
     rm asdf-v0.18.0-linux-amd64.tar.gz
@@ -97,13 +97,13 @@ RUN export PATH="$HOME/.local/bin:$PATH" && \
     asdf plugin add cairo-coverage && \
     asdf install cairo-coverage 0.5.0
 
-RUN curl -L https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh | sh
+RUN curl -sL https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh | sh
 
 # Install Claude (MCP servers configured in postCreateCommand)
 RUN npm install -g @anthropic-ai/claude-code
 
 # Install Starkli for Starknet CLI
-RUN curl https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
+RUN curl -sL https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 
 # pre-approve all commands for claude (full yolo)
 RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "deny": []}}' > ~/.claude/settings.json
