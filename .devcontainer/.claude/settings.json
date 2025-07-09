@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "defaultMode": "ask",
+    "allow": [],
+    "deny": []
+  },
+  "_comment": "This file provides default Claude settings. The 'ask' mode ensures security by prompting for permissions."
+}
