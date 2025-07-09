@@ -72,6 +72,8 @@ for domain in \
     "docs.starknet.io" \
     "github.com" \
     "foundry-rs.github.io" \
+    "docs.ekubo.org" \
+    "starknet-sepolia-api.ekubo.org" \
     "statsig.com"; do
     echo "Resolving $domain..."
     ips=$(dig +short A "$domain")
