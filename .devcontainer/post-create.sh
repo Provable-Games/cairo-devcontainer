@@ -23,6 +23,12 @@ cat > ~/.claude/settings.json << 'EOF'
 }
 EOF
 
+# Copy custom Claude commands
+echo "Installing custom Claude commands..."
+mkdir -p ~/.claude/commands
+cp -r /workspace/.devcontainer/commands/* ~/.claude/commands/ 2>/dev/null || true
+echo "Custom commands installed."
+
 # Install MCP servers
 echo "Installing MCP servers..."
 claude mcp add sequential-thinking -- npx @modelcontextprotocol/server-sequential-thinking
