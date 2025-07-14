@@ -118,6 +118,11 @@ RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/$USERNAME-firewall && \
   chmod 0440 /etc/sudoers.d/$USERNAME-firewall
 
+# Pre-create GPG directory with correct permissions for volume mount
+RUN mkdir -p /home/$USERNAME/.gnupg && \
+  chown -R $USERNAME:$USERNAME /home/$USERNAME/.gnupg && \
+  chmod 700 /home/$USERNAME/.gnupg
+
 # Switch back to user
 USER $USERNAME
 
