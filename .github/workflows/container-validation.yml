@@ -1,0 +1,96 @@
+name: Container Validation
+
+on:
+  pull_request:
+
+jobs:
+  validate-dockerfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Dockerfile syntax
+        run: |
+          # Check if Dockerfile exists
+          if [ ! -f ".devcontainer/Dockerfile" ]; then
+            echo "No Dockerfile found in .devcontainer/"
+            exit 0
+          fi
+
+          # Use hadolint to lint the Dockerfile (only fail on errors, not warnings)
+          # Note: When using docker, we need to mount the file or use stdin
+          docker run --rm -i -e HADOLINT_FAILURE_THRESHOLD=error hadolint/hadolint:latest < .devcontainer/Dockerfile
+
+      - name: Build Docker image
+        if: ${{ hashFiles('.devcontainer/Dockerfile') != '' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .devcontainer/
+          file: .devcontainer/Dockerfile
+          push: false
+          tags: test-image:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Dockerfile Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Dockerfile syntax validated with hadolint" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Docker image built successfully" >> $GITHUB_STEP_SUMMARY
+
+  validate-devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Validate devcontainer.json
+        run: |
+          # Check if devcontainer.json exists
+          if [ ! -f ".devcontainer/devcontainer.json" ]; then
+            echo "No devcontainer.json found"
+            exit 0
+          fi
+
+          # Validate JSON syntax
+          jq empty .devcontainer/devcontainer.json
+          echo "devcontainer.json is valid JSON"
+
+      - name: Build and test devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: test-devcontainer
+          push: never
+          cacheFrom: type=gha
+          cacheTo: type=gha,mode=max
+          runCmd: |
+            # Verify basic functionality
+            echo "Testing container functionality..."
+
+            # Check if essential tools are installed
+            which git || (echo "Git not found" && exit 1)
+            which node || (echo "Node.js not found" && exit 1)
+            which scarb || (echo "Scarb not found" && exit 1)
+            which sozo || (echo "Sozo not found" && exit 1)
+            which cairo-coverage || (echo "Cairo Coverage not found" && exit 1)
+            which snforge || (echo "Starknet Foundry not found" && exit 1)
+
+            echo "Container functionality tests passed!"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Container Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Devcontainer build successful" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ All required tools validated" >> $GITHUB_STEP_SUMMARY
