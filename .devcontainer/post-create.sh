@@ -7,21 +7,7 @@ echo "Setting up development environment..."
 echo "Initializing firewall..."
 sudo /usr/local/bin/init-firewall.sh
 
-# Configure Claude permissions
-echo "Configuring Claude permissions..."
-cat > ~/.claude/settings.json << 'EOF'
-{
-  "permissions": {
-    "defaultMode": "bypassPermissions",
-    "allow": [],
-    "deny": []
-  },
-  "env": {
-    "BASH_DEFAULT_TIMEOUT_MS": 3600000,
-    "BASH_MAX_TIMEOUT_MS": 3600000
-  }
-}
-EOF
+# Claude settings are now copied during container build
 
 # Copy custom Claude commands
 echo "Installing custom Claude commands..."
