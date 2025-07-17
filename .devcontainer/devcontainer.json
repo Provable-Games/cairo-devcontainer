@@ -36,8 +36,7 @@
 	},
 	"remoteUser": "ubuntu",
 	"mounts": [
-	  "source=claude-code-bashhistory,target=/commandhistory,type=volume",
-	  "source=claude-code-config,target=/home/ubuntu/.claude,type=volume"
+	  "source=claude-code-bashhistory,target=/commandhistory,type=volume"
 	],
 	"remoteEnv": {
 	  "NODE_OPTIONS": "--max-old-space-size=4096",

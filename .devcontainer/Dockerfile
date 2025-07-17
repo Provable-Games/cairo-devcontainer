@@ -108,8 +108,8 @@ RUN npm install -g @anthropic-ai/claude-code
 # Install Starkli for Starknet CLI
 RUN curl -sL https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 
-# pre-approve all commands for claude (full yolo)
-RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "deny": []}}' > ~/.claude/settings.json
+# Copy Claude settings from host
+COPY --chown=$USERNAME:$USERNAME .claude/settings.json /home/$USERNAME/.claude/settings.json
 
 # Switch to root for final setup
 USER root
