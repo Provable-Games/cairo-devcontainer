@@ -102,7 +102,7 @@ RUN export PATH="$HOME/.local/bin:$PATH" && \
 
 RUN curl -sL https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh | sh
 
-# Install Claude (MCP servers configured in postCreateCommand)
+# Install Claude
 RUN npm install -g @anthropic-ai/claude-code
 
 # Install Starkli for Starknet CLI
