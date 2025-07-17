@@ -108,8 +108,9 @@ RUN npm install -g @anthropic-ai/claude-code
 # Install Starkli for Starknet CLI
 RUN curl -sL https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 
-# Copy Claude configuration directory
-COPY --chown=$USERNAME:$USERNAME .claude /home/$USERNAME/.claude
+# Copy Claude configuration directory to a temporary location
+# (will be moved to final location in postCreateCommand to avoid volume mount conflict)
+COPY --chown=$USERNAME:$USERNAME .claude /tmp/.claude-init
 
 # Switch to root for final setup
 USER root
