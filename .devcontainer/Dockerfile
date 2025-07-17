@@ -108,8 +108,8 @@ RUN npm install -g @anthropic-ai/claude-code
 # Install Starkli for Starknet CLI
 RUN curl -sL https://get.starkli.sh | sh && /home/ubuntu/.starkli/bin/starkliup
 
-# pre-approve all commands for claude (full yolo)
-RUN echo '{"permissions": {"defaultMode": "bypassPermissions", "allow": [], "deny": []}}' > ~/.claude/settings.json
+# Copy Claude configuration directory
+COPY --chown=$USERNAME:$USERNAME .claude /home/$USERNAME/.claude
 
 # Switch to root for final setup
 USER root
@@ -120,11 +120,6 @@ RUN chmod +x /usr/local/bin/init-firewall.sh && \
   mkdir -p /etc/sudoers.d && \
   echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/$USERNAME-firewall && \
   chmod 0440 /etc/sudoers.d/$USERNAME-firewall
-
-# Pre-create GPG directory with correct permissions for volume mount
-RUN mkdir -p /home/$USERNAME/.gnupg && \
-  chown -R $USERNAME:$USERNAME /home/$USERNAME/.gnupg && \
-  chmod 700 /home/$USERNAME/.gnupg
 
 # Switch back to user
 USER $USERNAME
