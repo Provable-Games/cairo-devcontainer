@@ -90,7 +90,7 @@ RUN export PATH="$HOME/.local/bin:$PATH" && \
     mkdir -p ~/.config/asdf && \
     asdf plugin add dojo && \
     asdf install dojo 1.5.0 && \
-    asdf install dojo 1.5.1 && \
+    asdf install dojo 1.6.0 && \
     asdf plugin add scarb && \
     asdf install scarb 2.10.1 && \
     asdf install scarb 2.11.4 && \
