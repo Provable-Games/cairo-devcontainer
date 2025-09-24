@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+*.js.map
+*.d.ts
+*.d.ts.map
+coverage/
+.vscode/
+.idea/
+package-lock.json

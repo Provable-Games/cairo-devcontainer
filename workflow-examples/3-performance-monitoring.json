@@ -1,0 +1,53 @@
+{
+  "name": "3. Campaign Performance Monitoring",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "schedule",
+      "name": "Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "resource": "analytics",
+        "operation": "getStats",
+        "entityType": "LINE_ITEM",
+        "entityIds": "YOUR_LINE_ITEM_IDS"
+      },
+      "id": "stats",
+      "name": "Get Performance Stats",
+      "type": "twitterAds",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const stats = $json;\nconst impressions = stats.data?.[0]?.metrics?.impressions || 0;\nconst clicks = stats.data?.[0]?.metrics?.clicks || 0;\nconst ctr = impressions > 0 ? (clicks/impressions * 100).toFixed(2) : 0;\n\nreturn {\n  json: {\n    impressions,\n    clicks,\n    ctr: ctr + '%',\n    status: ctr > 2.5 ? 'Good' : 'Needs Optimization'\n  }\n};"
+      },
+      "id": "analyze",
+      "name": "Analyze Performance",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Every 6 Hours": {
+      "main": [[{"node": "Get Performance Stats", "type": "main", "index": 0}]]
+    },
+    "Get Performance Stats": {
+      "main": [[{"node": "Analyze Performance", "type": "main", "index": 0}]]
+    }
+  }
+}
